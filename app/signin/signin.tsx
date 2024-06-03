@@ -8,10 +8,16 @@ import Link from 'next/link'
 export default function Signin(){
 
     const [email, setEmail] = useState('');
+    const [err,setErr] = useState('')
     const router = useRouter()
 
     const handleSubmit = async (e:FormEvent) => {
         e.preventDefault();
+        if(!email.includes("pea.co.th")){
+          setErr('ต้องใช้ email ของ กฟภ. เท่านั้น ไม่สามารถใช้ email อื่นได้')
+          setEmail('')
+          return
+        }
         await signIn('email', { email, redirect: false,callbackUrl: "/" });
         router.push("/verify-email")
       };
@@ -24,7 +30,8 @@ export default function Signin(){
       <Link href='https://epi.pea.co.th' rel="noopener noreferrer" target="_blank">epi.pea.co.th</Link>
       <form onSubmit={handleSubmit} className="flex flex-col">
         <label htmlFor="signin"></label>
-        <input onChange={(e)=>setEmail(e.target.value)} type="email" name="signin" required/>
+        <input onChange={(e)=>setEmail(e.target.value)} type="email" name="signin" value={email} required/>
+        <p>{err}</p>
         <button type="submit">ส่ง Email</button>
       </form>
     </main>

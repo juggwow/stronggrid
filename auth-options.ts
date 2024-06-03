@@ -1,11 +1,12 @@
 // pages/api/auth/[...nextauth].js
 
-import NextAuth from 'next-auth';
+import NextAuth, { User } from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
 import nodemailer from 'nodemailer';
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client"
-import { Adapter } from 'next-auth/adapters';
+import { Adapter, AdapterUser } from 'next-auth/adapters';
+import { redirect } from "next/navigation";
 
 const prisma = new PrismaClient()
 
@@ -14,6 +15,14 @@ export const  authOptions = {
     maxAge : 60 * 60 * 24 * 365
   },
   adapter: PrismaAdapter(prisma) as Adapter,
+  callbacks: {
+    signIn: async ({ user }: { user: User | AdapterUser }) => {
+      if (!user.email || !user.email.includes("pea.co.th")) {
+        return false
+      }
+      return true;
+    },
+  },
   providers: [
     EmailProvider({
       server: {
